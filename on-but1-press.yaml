@@ -1,0 +1,41 @@
+- logger.log: "Testalarm button pressed"
+- if: 
+    condition: 
+      lambda: 'return id(global_send_divera_testalarm);'
+    then:
+        - logger.log: "Sending divera testalarm."
+        - http_request.post:
+            url: !secret divera_alarm_api_url
+            verify_ssl: false
+            headers:
+              Content-Type: application/json
+            json:
+              type: ${divera_type}
+            on_response:
+              then:
+                - logger.log:
+                    format: 'Response status: %d, Duration: %u ms'
+                    args:
+                      - status_code
+                      - duration_ms
+- if: 
+    condition: 
+      lambda: 'return id(global_send_ntfy_testalarm);'
+    then:
+      - logger.log: "Sending ntfy testalarm."
+      - http_request.send:
+          method: PUT
+          url: !secret ntfy_url
+          verify_ssl: false
+          headers: 
+            Title: ${ntfy_title}
+            Priority: ${ntfy_priority}
+            Tags: ${ntfy_tags}
+          body: ${ntfy_body}
+          on_response:
+            then:
+              - logger.log:
+                  format: 'Response status: %d, Duration: %u ms'
+                  args:
+                    - status_code
+                    - duration_ms
