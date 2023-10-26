@@ -1,5 +1,5 @@
 - logger.log: "Testalarm button pressed"
-- light.turn_on: testbutton_led
+- output.turn_on: testbutton_led
 - if: 
     condition: 
       lambda: 'return id(global_send_divera_testalarm);'
