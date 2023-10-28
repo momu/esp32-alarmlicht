@@ -2,9 +2,9 @@ esphome:
   name: esp-alarmlicht
   on_boot: 
     then:
-      # disable all LEDs on boot
+      # disable all LEDs and REL1 on boot
       - output.turn_off: testbutton_led
-      - output.turn_off: alarm_led
+      - output.turn_off: alarmlicht_led
       - output.turn_off: wifi_connected_led
       - output.turn_off: relay_1 
  
@@ -16,22 +16,29 @@ esp32:
   framework:
     type: arduino
 
+# global variables for enabling/disabling test alerts
+# and alerts via API calls
 globals:
   - id: global_send_divera_testalarm
     type: bool
-    initial_value: 'false'
+    initial_value: 'true'
   - id: global_send_ntfy_testalarm
     type: bool
-    initial_value: 'false'
+    initial_value: 'true'
   - id: global_send_divera_alarm
     type: bool
-    initial_value: 'false'
+    initial_value: 'true'
   - id: global_send_ntfy_alarm
     type: bool
-    initial_value: 'false'
+    initial_value: 'true'
+
+substitutions:
+  relay_on_time: 300ms
 
 # Enable logging
 logger:
+  level: DEBUG
+  # level: INFO
 
 wifi:
   networks:
@@ -46,7 +53,7 @@ output:
     id: testbutton_led
     pin: GPIO23
   - platform: gpio
-    id: alarm_led
+    id: alarmlicht_led
     pin: GPIO21
   - platform: gpio
     id: wifi_connected_led
@@ -55,12 +62,7 @@ output:
     id: relay_1
     pin: GPIO32
 
-# light:
-#   - platform: binary
-#     output: output_gpio23
-#     id: testbutton_led
-#     restore_mode: ALWAYS_ON
-
+# let wifi_connected_led flash every 3s
 interval:
   - interval: 3s
     then:
@@ -74,11 +76,15 @@ interval:
         else:
           - output.turn_off: wifi_connected_led
 
-# When the  BUT1 is pressed, trigger two alarms
+
 binary_sensor:
+# When the  BUT1 is pressed, on-but1-press.yaml is included
+# for sending test alerts via HTTP requests and turning on a LED 
+# and the relay
+# on release, the LED will be switched off
   - platform: gpio
     pin: GPIO34
-    name: "Button 1"
+    name: "BUT1"
     filters:
       - invert:
     on_press: 
@@ -86,35 +92,48 @@ binary_sensor:
           file: on-but1-press.yaml
           vars:  
             divera_type: "🤷Testalarm (🔘 am Alarmlicht)🤷"
-            ntfy_title: "🤷Testalarm (🔘 am Alarmlicht 2.0)🤷"
+            ntfy_title: "🤷Testalarm (🔘 am ESP-Alarmlicht)🤷"
             ntfy_priority: "default"
             ntfy_tags: "loudspeaker, construction"
-            ntfy_body: "Es drückte jemand den Testbutton am ESP-Alarmlicht."
+            ntfy_body: "Es drückte jemand den Testbutton am ESP-Alarmlicht und erfreut uns mit dieser Nachricht."
     on_release: 
       then:
         - output.turn_off: testbutton_led
-        - output.turn_off: wifi_connected_led
-        - output.turn_off: alarm_led
+# When GPIO16 is pulled down (remote for switching on the light is used),
+# the alarmlicht_led is turned on and REL1 is switched on for 
+# activating the lights.
   - platform: gpio
     pin: GPIO16
     name: "Funklicht"
     filters:
       - invert:
     on_press:
-    # todo: nur das relais schalten (alarmlicht muss an gehen)
-      - output.turn_on: testbutton_led
+      - logger.log: "Light switched on by remote control."
+      - output.turn_on: alarmlicht_led
+      - output.turn_on: relay_1
+      - delay: ${relay_on_time}
+      - output.turn_off: relay_1
     on_release: 
       then:
-        - output.turn_off: testbutton_led
+        - output.turn_off: alarmlicht_led
   - platform: gpio
+# When the  GPIO18 is pulled down, on-message-receive.yaml is included
+# for sending alerts via HTTP requests, turning on a LED 
+# and the relay
+# on release, the LED will be switched off
     pin: GPIO18
     name: "DME Relais"
     filters:
       - invert:
     on_press: 
-    # todo: http requests auslösen relais schalten (alarmlicht muss an gehen)
-      - output.turn_on: alarm_led
+        !include 
+          file: on-message-receive.yaml
+          vars:  
+            divera_type: "🚒ALARM!!!1elf (oder Einsatz)🚒"
+            ntfy_title: "🚒ALARM!!!1elf (oder Einsatz)🚒"
+            ntfy_priority: "urgent"
+            ntfy_tags: "loudspeaker, rotating_light"
+            ntfy_body: "Der DME löste aus."
     on_release: 
       then:
-        - output.turn_off: alarm_led
-
+        - output.turn_off: alarmlicht_led

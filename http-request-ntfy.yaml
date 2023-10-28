@@ -1,0 +1,26 @@
+# do a HTTP PUT request on the ntfy API
+# parameters:
+# log_text: String that will be logged
+# ntfy_title: Alert title
+# ntfy_priority: Message priority
+# ntfy_tags: Message tags
+# ntfy_body: Message body
+- logger.log: ${log_text}
+- http_request.send:
+    method: PUT
+    url: !secret ntfy_url
+    verify_ssl: false
+    headers: 
+        Title: ${ntfy_title}
+        Priority: ${ntfy_priority}
+        Tags: ${ntfy_tags}
+        message: ${ntfy_body}
+        Attach: "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExZGVpb2d5ZHRpbW5ieWxlZTFnemhuNGIxdjA2NGFncWphbTZwYnBzZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/0D502jOYTL23C33xV0/giphy.gif"
+        Filename: "alarm.gif"
+    on_response:
+        then:
+            - logger.log:
+                format: 'Response status: %d, Duration: %u ms'
+                args:
+                - status_code
+                - duration_ms

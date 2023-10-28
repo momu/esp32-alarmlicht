@@ -1,0 +1,19 @@
+# do a HTTP POST request on the Divera alarm API
+# parameters:
+# log_text: String that will be logged
+# divera_type: Alert title (max 30 chars)
+- logger.log: ${log_text}
+- http_request.post:
+    url: !secret divera_alarm_api_url
+    verify_ssl: false
+    headers:
+        Content-Type: application/json
+    json:
+        type: ${divera_type}
+    on_response:
+        then:
+        - logger.log:
+            format: 'Response status: %d, Duration: %u ms'
+            args:
+                - status_code
+                - duration_ms
