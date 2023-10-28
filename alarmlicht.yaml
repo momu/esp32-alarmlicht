@@ -2,10 +2,11 @@ esphome:
   name: esp-alarmlicht
   on_boot: 
     then:
-      # disable all LEDs on boot, due to inversion of the output it has to be turn_on
-      - output.turn_on: testbutton_led
-      - output.turn_on: alarm_led
-      - output.turn_on: wifi_connected_led
+      # disable all LEDs on boot
+      - output.turn_off: testbutton_led
+      - output.turn_off: alarm_led
+      - output.turn_off: wifi_connected_led
+      - output.turn_off: relay_1 
  
 http_request:
   useragent: esphome/esp-alarmlicht
@@ -44,15 +45,15 @@ output:
   - platform: gpio
     id: testbutton_led
     pin: GPIO23
-    inverted: True
   - platform: gpio
     id: alarm_led
     pin: GPIO21
-    inverted: True
   - platform: gpio
     id: wifi_connected_led
-    pin: GPIO26
-    inverted: True
+    pin: GPIO14
+  - platform: gpio
+    id: relay_1
+    pin: GPIO32
 
 # light:
 #   - platform: binary
@@ -60,11 +61,26 @@ output:
 #     id: testbutton_led
 #     restore_mode: ALWAYS_ON
 
+interval:
+  - interval: 3s
+    then:
+      if:
+        condition:
+          wifi.connected:
+        then:
+          - output.turn_on: wifi_connected_led
+          - delay: 0.05s
+          - output.turn_off: wifi_connected_led
+        else:
+          - output.turn_off: wifi_connected_led
+
 # When the  BUT1 is pressed, trigger two alarms
 binary_sensor:
   - platform: gpio
     pin: GPIO34
-    name: "Testalarm"
+    name: "Button 1"
+    filters:
+      - invert:
     on_press: 
         !include 
           file: on-but1-press.yaml
@@ -77,6 +93,28 @@ binary_sensor:
     on_release: 
       then:
         - output.turn_off: testbutton_led
-          
-        
+        - output.turn_off: wifi_connected_led
+        - output.turn_off: alarm_led
+  - platform: gpio
+    pin: GPIO16
+    name: "Funklicht"
+    filters:
+      - invert:
+    on_press:
+    # todo: nur das relais schalten (alarmlicht muss an gehen)
+      - output.turn_on: testbutton_led
+    on_release: 
+      then:
+        - output.turn_off: testbutton_led
+  - platform: gpio
+    pin: GPIO18
+    name: "DME Relais"
+    filters:
+      - invert:
+    on_press: 
+    # todo: http requests auslösen relais schalten (alarmlicht muss an gehen)
+      - output.turn_on: alarm_led
+    on_release: 
+      then:
+        - output.turn_off: alarm_led
 

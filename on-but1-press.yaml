@@ -1,5 +1,11 @@
 - logger.log: "Testalarm button pressed"
 - output.turn_on: testbutton_led
+- output.turn_on: wifi_connected_led
+- output.turn_on: alarm_led
+# switch the relay off after 300ms
+- output.turn_on: relay_1
+- delay: 300ms
+- output.turn_off: relay_1
 - if: 
     condition: 
       lambda: 'return id(global_send_divera_testalarm);'
