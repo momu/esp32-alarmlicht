@@ -2,7 +2,9 @@
 # parameters:
 # log_text: String that will be logged
 # divera_type: Alert title (max 30 chars)
-- logger.log: ${log_text}
+- logger.log: 
+    format: ${log_text}
+    level: INFO
 - http_request.post:
     url: !secret divera_alarm_api_url
     verify_ssl: false
@@ -17,3 +19,4 @@
             args:
                 - status_code
                 - duration_ms
+            level: INFO

@@ -5,7 +5,9 @@
 # ntfy_priority: Message priority
 # ntfy_tags: Message tags
 # ntfy_body: Message body
-- logger.log: ${log_text}
+- logger.log: 
+    format: ${log_text}
+    level: INFO
 - http_request.send:
     method: PUT
     url: !secret ntfy_url
@@ -22,5 +24,6 @@
             - logger.log:
                 format: 'Response status: %d, Duration: %u ms'
                 args:
-                - status_code
-                - duration_ms
+                    - status_code
+                    - duration_ms
+                level: INFO

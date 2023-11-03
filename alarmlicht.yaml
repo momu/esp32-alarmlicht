@@ -10,6 +10,8 @@ esphome:
  
 http_request:
   useragent: esphome/esp-alarmlicht
+# set timeout to prevent restart due to watchdog timeout (https://github.com/esphome/issues/issues/2853#issuecomment-1366086914)
+  timeout: 1s
 
 esp32:
   board: esp32-evb
@@ -108,7 +110,9 @@ binary_sensor:
     filters:
       - invert:
     on_press:
-      - logger.log: "Light switched on by remote control."
+      - logger.log: 
+          format: "Light switched on by remote control."
+          level: INFO
       - output.turn_on: alarmlicht_led
       - output.turn_on: relay_1
       - delay: ${relay_on_time}
