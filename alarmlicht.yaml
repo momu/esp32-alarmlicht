@@ -30,15 +30,15 @@ globals:
     initial_value: 'true'
   - id: global_send_ntfy_alarm
     type: bool
-    initial_value: 'true'
+    initial_value: 'false'
 
 substitutions:
   relay_on_time: 300ms
 
 # Enable logging
 logger:
-  level: DEBUG
-  # level: INFO
+  # level: DEBUG
+  level: INFO
 
 wifi:
   networks:
