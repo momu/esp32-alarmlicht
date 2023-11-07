@@ -2,3 +2,5 @@
 notes.md
 secrets.yaml
 .esphome/
+hardware/esp32-alarmlicht-backups
+*.prl
