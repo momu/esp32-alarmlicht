@@ -1,0 +1,58 @@
+<mxfile host="app.diagrams.net" modified="2023-11-08T17:58:55.223Z" agent="Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/118.0" etag="CQ1cvykSyya0e4RlmqhS" version="22.0.8" type="github">
+  <diagram name="Page-1" id="90a13364-a465-7bf4-72fc-28e22215d7a0">
+    <mxGraphModel dx="1434" dy="730" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1.5" pageWidth="1169" pageHeight="826" background="none" math="0" shadow="0">
+      <root>
+        <mxCell id="0" style=";html=1;" />
+        <mxCell id="1" style=";html=1;" parent="0" />
+        <mxCell id="3a17f1ce550125da-13" style="edgeStyle=elbowEdgeStyle;rounded=0;html=1;startArrow=none;startFill=0;jettySize=auto;orthogonalLoop=1;fontSize=18;elbow=vertical;" parent="1" source="3a17f1ce550125da-2" target="EXmEp-FDWZIvfwtkKKCE-7" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1037" y="479" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="3a17f1ce550125da-16" style="edgeStyle=elbowEdgeStyle;rounded=0;html=1;startArrow=none;startFill=0;jettySize=auto;orthogonalLoop=1;fontSize=18;elbow=vertical;" parent="1" source="3a17f1ce550125da-2" target="3a17f1ce550125da-7" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="3a17f1ce550125da-2" value="esp-alarmlicht" style="whiteSpace=wrap;html=1;shadow=1;fontSize=18;fillColor=#f5f5f5;strokeColor=#666666;" parent="1" vertex="1">
+          <mxGeometry x="787" y="454" width="170" height="280" as="geometry" />
+        </mxCell>
+        <mxCell id="3a17f1ce550125da-7" value="Alarmlicht" style="whiteSpace=wrap;html=1;shadow=1;fontSize=18;fillColor=#f5f5f5;strokeColor=#666666;" parent="1" vertex="1">
+          <mxGeometry x="1037" y="684" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="3a17f1ce550125da-20" style="edgeStyle=elbowEdgeStyle;rounded=0;html=1;startArrow=none;startFill=0;jettySize=auto;orthogonalLoop=1;fontSize=18;elbow=vertical;" parent="1" source="3a17f1ce550125da-8" target="3a17f1ce550125da-2" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="750" y="520" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="3a17f1ce550125da-8" value="Funklicht" style="whiteSpace=wrap;html=1;shadow=1;fontSize=18;fillColor=#f5f5f5;strokeColor=#666666;" parent="1" vertex="1">
+          <mxGeometry x="597" y="454" width="120" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="3a17f1ce550125da-9" value="DME" style="whiteSpace=wrap;html=1;shadow=1;fontSize=18;fillColor=#f5f5f5;strokeColor=#666666;" parent="1" vertex="1">
+          <mxGeometry x="597" y="634" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="EXmEp-FDWZIvfwtkKKCE-1" style="edgeStyle=elbowEdgeStyle;rounded=0;html=1;startArrow=none;startFill=0;jettySize=auto;orthogonalLoop=1;fontSize=18;elbow=vertical;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="757" y="664" />
+            </Array>
+            <mxPoint x="717" y="664" as="sourcePoint" />
+            <mxPoint x="787" y="664" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="EXmEp-FDWZIvfwtkKKCE-2" value="Relais" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="910" y="700" width="47" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="EXmEp-FDWZIvfwtkKKCE-3" value="GPIO" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="787" y="654" width="47" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="EXmEp-FDWZIvfwtkKKCE-5" value="GPIO" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="787" y="509" width="47" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="EXmEp-FDWZIvfwtkKKCE-7" value="Divera API" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#7AA116;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.http_protocol;" vertex="1" parent="1">
+          <mxGeometry x="1120" y="430.75" width="78" height="78" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
