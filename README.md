@@ -2,7 +2,7 @@
 
 [[_TOC_]]
 
-Automatisierte Alarmauslösung über einen HTTP-Requests bei Alarmierung eines Melders in einer LGRA Ladestation.
+[ESPHome](https://esphome.io/) basierte, automatisierte Alarmauslösung über einen `http` request bei Alarmierung eines Melders in einer LGRA Ladestation.
 
 Um automatisiert einen Alarm per `http` request (z.B. über [DIVERA 24/7](https://www.divera247.com)) auszulösen, wird der Relaiskontakt 
 des Ladegeräts Swissphone LGRA Expert ausgewertet.
@@ -40,6 +40,7 @@ Das `esp-alarmlicht` wertet zwei `GPIO` Eingänge aus. `GPIO16` wird über ein R
 
 Basis des `esp-alarmlicht` ist ein [ESP32-EVB-EA-IND](https://www.olimex.com/Products/IoT/ESP32/ESP32-EVB) Board mit einem `ESP32-WROOM-32UE` Modul.
 
+Die Statusanzeige erfolgt über drei LEDs.
 
 ### Bill Of Materials
 
@@ -51,7 +52,9 @@ Basis des `esp-alarmlicht` ist ein [ESP32-EVB-EA-IND](https://www.olimex.com/Pro
   * 3x `3k`
   * 2x `10k`
 
-## Setup
+## Software
+
+### Setup
 
 ```
 python -m venv .venv
