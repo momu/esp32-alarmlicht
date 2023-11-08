@@ -4,14 +4,52 @@
 
 Automatisierte Alarmauslösung über einen HTTP-Requests bei Alarmierung eines Melders in einer LGRA Ladestation.
 
-Um eine automatisierte Alarmauslösung zu realisieren (z.B. über [DIVERA 24/7](https://www.divera247.com)), wird der Relaiskontakt 
-des Swissphone Ladegeräts LGRA Expert
+Um automatisiert einen Alarm per `http` request (z.B. über [DIVERA 24/7](https://www.divera247.com)) auszulösen, wird der Relaiskontakt 
+des Ladegeräts Swissphone LGRA Expert ausgewertet.
 
-## Bill Of Materials
+## Ladegerät Swissphone LGRA Expert
+
+Das Ladegerät verfügt über einen fünfpoligen DIN-Stecker (female) mit folgender Belegung:
+
+![](assets/belegung-lgra-expert.png)
+
+Pin `4` ist mit der Stromversorung des Netzteils verbunden (`+5V`), Pin `2` ist `GND`, Pins `1` und `3` werden potentialfrei durch ein Relais geschaltet.
+
+### Relaiskonfiguration/Lötbrücke
+
+Im Auslieferungszustand wird der Relaiskontakt geschlossen wenn der DME eine Meldung empfängt. Der Kontakt wird wieder geöffnet, wenn alle Meldungen quittiert wurden.
+
+Über eine Lötbrücke wird das Verhalten des Relais konfiguriert. Wird diese Lötbrücke entfernt, so wird das Relais bei jedem Meldungseingang für ca. `10 s` 
+geschlossen, unabhängig vom Quittieren vorheriger Meldungen.
+
+Für die Verwendung des Ladegerätes mit dem `esp-alarmlicht` muss die Lötbrücke entfernt werden.
+
+![Alt text](assets/br%C3%BCcke-geschlossen.jpg) 
+
+![Alt text](assets/br%C3%BCcke-ge%C3%B6ffnet.jpg)
+
+## Blockdiagramm
+
+![Alt text](assets/schema.drawio.svg)
+
+Das `esp-alarmlicht` wertet zwei `GPIO` Eingänge aus. `GPIO16` wird über ein Relais einer Funkfernbedienung angesteuert. Wird dieses Relais geschlossen, soll das über ein Relais das Alarmlicht angesteuert werden.
+`GPIO18` wird über das Relais im Ladegerät des DME gesteuert. Wird das Relais geschlossen, soll das Alarmlicht angesteuert werden und ein `http` request zu Auslösung eines Alarms ausgelöst werden.
+
+
+## Hardware
+
+Basis des `esp-alarmlicht` ist ein [ESP32-EVB-EA-IND](https://www.olimex.com/Products/IoT/ESP32/ESP32-EVB) Board mit einem `ESP32-WROOM-32UE` Modul.
+
+
+### Bill Of Materials
 
 * [ESP32-EVB-EA-IND](https://www.olimex.com/Products/IoT/ESP32/ESP32-EVB)
 * [BOX-ESP32-EVB-EA](https://www.olimex.com/Products/IoT/ESP32/BOX-ESP32-EVB-EA)
-
+* 3x LED
+* Widerstände
+  * 2x `220R`
+  * 3x `3k`
+  * 2x `10k`
 
 ## Setup
 
