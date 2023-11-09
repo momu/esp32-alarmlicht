@@ -1,5 +1,5 @@
 # turn on the alarmlicht_led, switch REL1 on for 300ms and – depending
-# on the global boolean variabales - do Divera and ntfy HTTP request
+# on the global boolean variables - do Divera and ntfy HTTP request
 # to trigger alerts via their API
 - logger.log: 
     format: "Pager received a message"

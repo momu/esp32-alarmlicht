@@ -8,6 +8,7 @@
     (title "ESP32-Alarmlicht")
     (date "2023-11-06")
     (rev "1.0.0")
+    (comment 1 "https://github.com/momu/esp32-alarmlicht")
   )
 
   (lib_symbols
@@ -1840,7 +1841,7 @@
       )
       (project "esp32-alarmlicht"
         (path "/ccbe7650-e720-41cb-8215-f484d5683532"
-          (reference "PWR101") (unit 1)
+          (reference "PWR2") (unit 1)
         )
       )
     )
