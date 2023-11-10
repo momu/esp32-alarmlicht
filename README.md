@@ -48,6 +48,7 @@ Vollständiges Schematic als `KiCad` Projekt oder als [PDF](hardware/esp32-alarm
   * 3x `3k`
   * 2x `10k`
 * DIN Stecker 5-polig male
+* [Plakette »Technisch fragwürdig«](https://loet.bar/products/plakette-fragwuerdig-sticker)
 
 ## Software
 
