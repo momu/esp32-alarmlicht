@@ -1,8 +1,11 @@
 # ESP32 Alarmlicht
 
+
 [ESPHome](https://esphome.io/) basierte, automatisierte Alarmauslösung über einen `http` request bei Alarmierung eines Melders in einer `LGRA` Ladestation.
 
 Um automatisiert einen Alarm per `http` request (z.B. über [DIVERA 24/7](https://www.divera247.com)) auszulösen, wird der Relaiskontakt des Ladegeräts `Swissphone LGRA Expert` ausgewertet.
+
+![esp-alarmlicht nur echt mit loet.bar sticker](assets/esp-alarmlicht.jpg)
 
 ## Blockdiagramm
 
