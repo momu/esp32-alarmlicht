@@ -1,0 +1,22 @@
+# send test alerts, reset pending alert flag
+- if: 
+    condition: 
+      lambda: 'return id(global_send_divera_testalarm);'
+    then: !include
+      file: http-request-divera.yaml
+      vars:
+        log_text: "Sending Divera test alert."
+        divera_type: ${divera_type}
+- if: 
+    condition: 
+      lambda: 'return id(global_send_ntfy_testalarm);'
+    then: !include
+      file: http-request-ntfy.yaml
+      vars:
+        log_text: "Sending ntfy test alert."
+        ntfy_title: ${ntfy_title}
+        ntfy_priority: ${ntfy_priority}
+        ntfy_tags: ${ntfy_tags}
+        ntfy_body: ${ntfy_body}
+- lambda: 'id(global_alert_pending) = false;'
+- lambda: 'id(global_pending_alert_type_test) = false;'
