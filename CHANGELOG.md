@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+
+## [1.1.0](https://github.com/momu/esp32-alarmlicht/compare/v1.0.1...v1.1.0) - 2023-11-25
+
 * finalize documentation
 * when there is no wifi connection, remember pending alerts (#5)
 * code modularisation, improve reusability 
