@@ -9,22 +9,21 @@
 - output.turn_on: relay_1
 - delay: ${relay_on_time}
 - output.turn_off: relay_1
+# only send alerts, when there is a wifi connection
 - if: 
-    condition: 
-      lambda: 'return id(global_send_divera_testalarm);'
-    then: !include
-      file: http-request-divera.yaml
-      vars:
-        log_text: "Sending Divera test alert."
+    condition:
+      wifi.connected:
+    then: !include 
+      file: send-test-alerts.yaml
+      vars:  
         divera_type: ${divera_type}
-- if: 
-    condition: 
-      lambda: 'return id(global_send_ntfy_testalarm);'
-    then: !include
-      file: http-request-ntfy.yaml
-      vars:
-        log_text: "Sending ntfy test alert."
         ntfy_title: ${ntfy_title}
         ntfy_priority: ${ntfy_priority}
         ntfy_tags: ${ntfy_tags}
         ntfy_body: ${ntfy_body}
+    else:
+      - lambda: 'id(global_alert_pending) = true;'
+      - lambda: 'id(global_pending_alert_type_test) = true;'
+      - logger.log: 
+          format: "No wifi connection, testalert set to pending."
+          level: INFO

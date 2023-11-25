@@ -33,14 +33,34 @@ globals:
   - id: global_send_ntfy_alarm
     type: bool
     initial_value: 'false'
+# is set to true when a alert is received
+# will be set to false when alert has been transmitted
+# will be checked on wifi reconnect 
+  - id: global_alert_pending
+    type: bool
+    initial_value: 'false'
+# wether the pending alert is test or real alert
+  - id: global_pending_alert_type_test
+    type: bool
+    initial_value: 'false'
 
 substitutions:
   relay_on_time: 300ms
+  divera_type_alert: "🚒ALARM!!!1elf (oder Einsatz)🚒"
+  ntfy_title_alert: "🚒ALARM!!!1elf (oder Einsatz)🚒"
+  ntfy_priority_alert: "urgent"
+  ntfy_tags_alert: "loudspeaker, rotating_light"
+  ntfy_body_alert: "Der DME löste aus."
+  divera_type_test: "🤷Testalarm (🔘 am Alarmlicht)🤷"
+  ntfy_title_test: "🤷Testalarm (🔘 am ESP-Alarmlicht)🤷"
+  ntfy_priority_test: "default"
+  ntfy_tags_test: "loudspeaker, construction"
+  ntfy_body_test: "Es drückte jemand den Testbutton am ESP-Alarmlicht und erfreut uns mit dieser Nachricht."
 
 # Enable logging
 logger:
-  # level: DEBUG
-  level: INFO
+  level: DEBUG
+  # level: INFO
 
 wifi:
   networks:
@@ -49,6 +69,7 @@ wifi:
     - ssid: !secret second_wifi_ssid
       password: !secret second_wifi_password
   power_save_mode: none
+  id: 'wifi_id'
 
 
 output:
@@ -65,8 +86,8 @@ output:
     id: relay_1
     pin: GPIO32
 
-# let wifi_connected_led flash every 3s
 interval:
+# let wifi_connected_led flash every 3s
   - interval: 3s
     then:
       if:
@@ -78,6 +99,39 @@ interval:
           - output.turn_off: wifi_connected_led
         else:
           - output.turn_off: wifi_connected_led
+  # check if there are pending alerts every 10 s
+  - interval: 10s
+    then:
+      if:
+        condition:
+          wifi.connected:
+        then: 
+          if:
+            condition: 
+              lambda: 'return id(global_alert_pending);'
+            then:
+              - logger.log: 
+                  format: "Pending alert found."
+                  level: INFO
+              - if:
+                  condition: 
+                    lambda: 'return id(global_pending_alert_type_test);'
+                  then: !include 
+                    file: send-test-alerts.yaml
+                    vars:
+                      divera_type: ${divera_type_test}
+                      ntfy_title: ${ntfy_title_test}
+                      ntfy_priority: ${ntfy_priority_test}
+                      ntfy_tags: ${ntfy_tags_test}
+                      ntfy_body: ${ntfy_body_test}
+                  else: !include 
+                    file: send-alerts.yaml
+                    vars:
+                      divera_type: ${divera_type_alert}
+                      ntfy_title: ${ntfy_title_alert}
+                      ntfy_priority: ${ntfy_priority_alert}
+                      ntfy_tags: ${ntfy_tags_alert}
+                      ntfy_body: ${ntfy_body_alert}
 
 
 binary_sensor:
@@ -94,11 +148,11 @@ binary_sensor:
         !include 
           file: on-but1-press.yaml
           vars:  
-            divera_type: "🤷Testalarm (🔘 am Alarmlicht)🤷"
-            ntfy_title: "🤷Testalarm (🔘 am ESP-Alarmlicht)🤷"
-            ntfy_priority: "default"
-            ntfy_tags: "loudspeaker, construction"
-            ntfy_body: "Es drückte jemand den Testbutton am ESP-Alarmlicht und erfreut uns mit dieser Nachricht."
+            divera_type: ${divera_type_test}
+            ntfy_title: ${ntfy_title_test}
+            ntfy_priority: ${ntfy_priority_test}
+            ntfy_tags: ${ntfy_tags_test}
+            ntfy_body: ${ntfy_body_test}
     on_release: 
       then:
         - output.turn_off: testbutton_led
@@ -133,12 +187,12 @@ binary_sensor:
     on_press: 
         !include 
           file: on-message-receive.yaml
-          vars:  
-            divera_type: "🚒ALARM!!!1elf (oder Einsatz)🚒"
-            ntfy_title: "🚒ALARM!!!1elf (oder Einsatz)🚒"
-            ntfy_priority: "urgent"
-            ntfy_tags: "loudspeaker, rotating_light"
-            ntfy_body: "Der DME löste aus."
+          vars:
+            divera_type: ${divera_type_alert}
+            ntfy_title: ${ntfy_title_alert}
+            ntfy_priority: ${ntfy_priority_alert}
+            ntfy_tags: ${ntfy_tags_alert}
+            ntfy_body: ${ntfy_body_alert}
     on_release: 
       then:
         - output.turn_off: alarmlicht_led
