@@ -23,7 +23,7 @@ esp32:
 globals:
   - id: global_send_divera_testalarm
     type: bool
-    initial_value: 'false'
+    initial_value: 'true'
   - id: global_send_ntfy_testalarm
     type: bool
     initial_value: 'true'
@@ -59,8 +59,8 @@ substitutions:
 
 # Enable logging
 logger:
-  # level: DEBUG
-  level: INFO
+  level: DEBUG
+  # level: INFO
 
 wifi:
   networks:
