@@ -5,6 +5,7 @@
     condition:
       - lambda: 'return id(global_alert_type_test) == false;'
     then:
+      - logger.log: "send-alerts.yaml:8"
       - if: 
           condition: 
             lambda: 'return id(global_send_divera_alarm);'
@@ -13,6 +14,7 @@
             vars:
               log_text: "Sending Divera alert."
               divera_type: ${divera_type}
+      - logger.log: "send-alerts.yaml:17"
       - if: 
           condition: 
             lambda: 'return id(global_send_ntfy_alarm);'
@@ -24,8 +26,10 @@
               ntfy_priority: ${ntfy_priority}
               ntfy_tags: ${ntfy_tags}
               ntfy_body: ${ntfy_body}
+      - logger.log: "send-alerts.yaml:29"
       - lambda: 'id(global_alert_pending) = false;'
       - lambda: 'id(global_pending_alert_type_test) = false;'
+      - logger.log: "send-alerts.yaml:31"
     else:
       # send test alerts, reset pending alert flag
       - if: 

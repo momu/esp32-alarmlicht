@@ -11,7 +11,7 @@ esphome:
 http_request:
   useragent: esphome/esp-alarmlicht
   id: http_request_data
-# set timeout to prevent restart due to watchdog timeout (https://github.com/esphome/issues/issues/2853#issuecomment-1366086914)
+# set timeout to prevent - delay: 2srestart due to watchdog timeout (https://github.com/esphome/issues/issues/2853#issuecomment-1366086914)
   timeout: 1s
 
 esp32:
@@ -76,6 +76,7 @@ substitutions:
 
 # Enable logging
 logger:
+  # level: VERBOSE
   level: DEBUG
   # level: INFO
 
@@ -176,6 +177,7 @@ interval:
                     ntfy_body: '${ntfy_body_alert}'
                   }
               }
+              - delay: 2s
         
       
 

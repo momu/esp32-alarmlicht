@@ -5,6 +5,7 @@
 # ntfy_priority: Message priority
 # ntfy_tags: Message tags
 # ntfy_body: Message body
+- logger.log: "http-request-ntfy.yaml:8"
 - logger.log: 
     format: ${log_text}
     level: INFO

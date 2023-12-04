@@ -20,6 +20,7 @@
     condition:
         lambda: 'return (id(global_divera_http_request_count) < id(global_divera_http_request_max_retries));'
     then:
+        - lambda: 'ESP_LOGD("custom", "(if)global_divera_http_request_count: %d, global_divera_http_request_max_retries: %d",id(global_divera_http_request_count), id(global_divera_http_request_max_retries));'
         - http_request.post:
             url: !secret divera_alarm_api_url
             verify_ssl: false
@@ -54,6 +55,7 @@
                                 format: 'Set global_divera_http_request_failed to false, global_divera_http_request_count to 0.'
                                 level: INFO
     else:
+        - lambda: 'ESP_LOGD("custom", "(if)global_divera_http_request_count: %d, global_divera_http_request_max_retries: %d",id(global_divera_http_request_count), id(global_divera_http_request_max_retries));'
         - logger.log:
             format: 'Max retry count reached (%u), stop retrying.'
             args:
@@ -61,3 +63,4 @@
             level: INFO
         - lambda: 'id(global_divera_http_request_failed) = false;'
         - lambda: 'id(global_divera_http_request_count) = 0;'
+- logger.log: "http-request-divera.yaml:66"
