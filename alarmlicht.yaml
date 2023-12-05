@@ -40,6 +40,17 @@ globals:
   - id: global_alert_pending
     type: bool
     initial_value: 'false'
+# as modularisation is not easy there is only send-alerts.yaml for
+# handling both: real and test alerts
+# global_alert_type_test is used for distinguishing between them
+#  global_alert_type_test = false -> alert
+#  global_alert_type_test = true -> test alert
+# caution: 
+# has to be set before including send-alerts.yaml and reset afterwards. e.g
+# - lambda: 'id(global_alert_type_test) = true;'
+# - <<: !include {file: send-alerts.yaml,
+# …
+# - lambda: 'id(global_pending_alert_type_test) = false;'
   - id: global_alert_type_test
     type: bool
     initial_value: 'false'
@@ -48,18 +59,18 @@ globals:
     type: bool
     initial_value: 'false'
 # failed http request and retry handling
+# set to true when request failed
   - id: global_divera_http_request_failed
     type: bool
     initial_value: 'false'
+# max number of retries when failed
   - id: global_divera_http_request_max_retries
     type: int
     initial_value: '5'
+# counter for retries
   - id: global_divera_http_request_count
     type: int
     initial_value: '0'
-  # - id: global_divera_http_request_status_code
-  #   type: int
-  #   initial_value: '0'
 
 substitutions:
   relay_on_time: 300ms
@@ -123,7 +134,8 @@ interval:
       if:
         condition:
           wifi.connected:
-        then: 
+        then:
+          # check if global_alert_pending flag was set and process a pending alert
           if:
             condition: 
               lambda: 'return id(global_alert_pending);'
@@ -160,6 +172,7 @@ interval:
                       }
   - interval: 5s
     then:
+      #  if the wifi is connected and http process failed, process it for resending the request
       - while:
           condition:
             and:
@@ -177,6 +190,8 @@ interval:
                     ntfy_body: '${ntfy_body_alert}'
                   }
               }
+              # delay is needed to get some time for the watchdog
+              # if omitted software will crash
               - delay: 2s
         
       

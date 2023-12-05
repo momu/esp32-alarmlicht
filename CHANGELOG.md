@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.0](https://github.com/momu/esp32-alarmlicht/compare/v1.1.0...v1.2.0) - 2023-12-05
+
+* add retry logic when http request fails #7
+* include send-test-alerts.yaml into send-alerts.yaml
+* add some global variables for http request retries and alert type to be sent
 
 ## [1.1.0](https://github.com/momu/esp32-alarmlicht/compare/v1.0.1...v1.1.0) - 2023-11-25
 
