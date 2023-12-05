@@ -1,22 +1,52 @@
-# send alerts, reset pending alert flag
+# send alerts, depending on global_alert_type_test=true|false
+# a real alert or a test alert will be issued
+# reset pending alert flag
 - if: 
-    condition: 
-      lambda: 'return id(global_send_divera_alarm);'
-    then: !include
-      file: http-request-divera.yaml
-      vars:
-        log_text: "Sending Divera alert."
-        divera_type: ${divera_type}
-- if: 
-    condition: 
-      lambda: 'return id(global_send_ntfy_alarm);'
-    then: !include
-      file: http-request-ntfy.yaml
-      vars:
-        log_text: "Sending ntfy alert."
-        ntfy_title: ${ntfy_title}
-        ntfy_priority: ${ntfy_priority}
-        ntfy_tags: ${ntfy_tags}
-        ntfy_body: ${ntfy_body}
-- lambda: 'id(global_alert_pending) = false;'
-- lambda: 'id(global_pending_alert_type_test) = false;'
+    condition:
+      - lambda: 'return id(global_alert_type_test) == false;'
+    then:
+      - if: 
+          condition: 
+            lambda: 'return id(global_send_divera_alarm);'
+          then: !include
+            file: http-request-divera.yaml
+            vars:
+              log_text: "Sending Divera alert."
+              divera_type: ${divera_type}
+      - if: 
+          condition: 
+            lambda: 'return id(global_send_ntfy_alarm);'
+          then: !include
+            file: http-request-ntfy.yaml
+            vars:
+              log_text: "Sending ntfy alert."
+              ntfy_title: ${ntfy_title}
+              ntfy_priority: ${ntfy_priority}
+              ntfy_tags: ${ntfy_tags}
+              ntfy_body: ${ntfy_body}
+      # reset the pending (no wifi) flag 
+      - lambda: 'id(global_alert_pending) = false;'
+      - lambda: 'id(global_pending_alert_type_test) = false;'
+    else:
+      # send test alerts, reset pending alert flag
+      - if: 
+          condition: 
+            lambda: 'return id(global_send_divera_testalarm);'
+          then: !include
+            file: http-request-divera.yaml
+            vars:
+              log_text: "Sending Divera test alert."
+              divera_type: ${divera_type}
+      - if: 
+          condition: 
+            lambda: 'return id(global_send_ntfy_testalarm);'
+          then: !include
+            file: http-request-ntfy.yaml
+            vars:
+              log_text: "Sending ntfy test alert."
+              ntfy_title: ${ntfy_title}
+              ntfy_priority: ${ntfy_priority}
+              ntfy_tags: ${ntfy_tags}
+              ntfy_body: ${ntfy_body}
+      - lambda: 'id(global_alert_pending) = false;'
+      - lambda: 'id(global_pending_alert_type_test) = false;'

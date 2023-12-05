@@ -13,14 +13,18 @@
 - if: 
     condition:
       wifi.connected:
-    then: !include 
-      file: send-alerts.yaml
-      vars:  
-        divera_type: ${divera_type}
-        ntfy_title: ${ntfy_title}
-        ntfy_priority: ${ntfy_priority}
-        ntfy_tags: ${ntfy_tags}
-        ntfy_body: ${ntfy_body}
+    then:
+        - lambda: 'id(global_alert_type_test) = false;'
+        - <<: !include {file: send-alerts.yaml,
+          vars:
+            {
+              divera_type: '${divera_type_alert}',
+              ntfy_title: '${ntfy_title_alert}',
+              ntfy_priority: '${ntfy_priority_alert}',
+              ntfy_tags: '${ntfy_tags_alert}',
+              ntfy_body: '${ntfy_body_alert}'
+            }
+        }
     else:
       - lambda: 'id(global_alert_pending) = true;'
       - lambda: 'id(global_pending_alert_type_test) = false;'

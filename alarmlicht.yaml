@@ -10,7 +10,8 @@ esphome:
  
 http_request:
   useragent: esphome/esp-alarmlicht
-# set timeout to prevent restart due to watchdog timeout (https://github.com/esphome/issues/issues/2853#issuecomment-1366086914)
+  id: http_request_data
+# set timeout to prevent - delay: 2srestart due to watchdog timeout (https://github.com/esphome/issues/issues/2853#issuecomment-1366086914)
   timeout: 1s
 
 esp32:
@@ -39,10 +40,37 @@ globals:
   - id: global_alert_pending
     type: bool
     initial_value: 'false'
+# as modularisation is not easy there is only send-alerts.yaml for
+# handling both: real and test alerts
+# global_alert_type_test is used for distinguishing between them
+#  global_alert_type_test = false -> alert
+#  global_alert_type_test = true -> test alert
+# caution: 
+# has to be set before including send-alerts.yaml and reset afterwards. e.g
+# - lambda: 'id(global_alert_type_test) = true;'
+# - <<: !include {file: send-alerts.yaml,
+# …
+# - lambda: 'id(global_pending_alert_type_test) = false;'
+  - id: global_alert_type_test
+    type: bool
+    initial_value: 'false'
 # wether the pending alert is test or real alert
   - id: global_pending_alert_type_test
     type: bool
     initial_value: 'false'
+# failed http request and retry handling
+# set to true when request failed
+  - id: global_divera_http_request_failed
+    type: bool
+    initial_value: 'false'
+# max number of retries when failed
+  - id: global_divera_http_request_max_retries
+    type: int
+    initial_value: '5'
+# counter for retries
+  - id: global_divera_http_request_count
+    type: int
+    initial_value: '0'
 
 substitutions:
   relay_on_time: 300ms
@@ -59,6 +87,7 @@ substitutions:
 
 # Enable logging
 logger:
+  # level: VERBOSE
   level: DEBUG
   # level: INFO
 
@@ -105,7 +134,8 @@ interval:
       if:
         condition:
           wifi.connected:
-        then: 
+        then:
+          # check if global_alert_pending flag was set and process a pending alert
           if:
             condition: 
               lambda: 'return id(global_alert_pending);'
@@ -116,23 +146,55 @@ interval:
               - if:
                   condition: 
                     lambda: 'return id(global_pending_alert_type_test);'
-                  then: !include 
-                    file: send-test-alerts.yaml
-                    vars:
-                      divera_type: ${divera_type_test}
-                      ntfy_title: ${ntfy_title_test}
-                      ntfy_priority: ${ntfy_priority_test}
-                      ntfy_tags: ${ntfy_tags_test}
-                      ntfy_body: ${ntfy_body_test}
-                  else: !include 
-                    file: send-alerts.yaml
-                    vars:
-                      divera_type: ${divera_type_alert}
-                      ntfy_title: ${ntfy_title_alert}
-                      ntfy_priority: ${ntfy_priority_alert}
-                      ntfy_tags: ${ntfy_tags_alert}
-                      ntfy_body: ${ntfy_body_alert}
-
+                  then:
+                      - lambda: 'id(global_alert_type_test) = true;'
+                      - <<: !include {file: send-alerts.yaml,
+                        vars:
+                          {
+                            divera_type: '${divera_type_test}',
+                            ntfy_title: '${ntfy_title_test}',
+                            ntfy_priority: '${ntfy_priority_test}',
+                            ntfy_tags: '${ntfy_tags_test}',
+                            ntfy_body: '${ntfy_body_test}'
+                          }
+                        }
+                  else: 
+                      - lambda: 'id(global_alert_type_test) = false;'
+                      - <<: !include {file: send-alerts.yaml,
+                        vars:
+                          {
+                            divera_type: '${divera_type_alert}',
+                            ntfy_title: '${ntfy_title_alert}',
+                            ntfy_priority: '${ntfy_priority_alert}',
+                            ntfy_tags: '${ntfy_tags_alert}',
+                            ntfy_body: '${ntfy_body_alert}'
+                          }
+                      }
+  - interval: 5s
+    then:
+      #  if the wifi is connected and http process failed, process it for resending the request
+      - while:
+          condition:
+            and:
+              - wifi.connected
+              - lambda: 'return id(global_divera_http_request_failed);'
+          then: 
+              - lambda: 'id(global_alert_type_test) = false;'
+              - <<: !include {file: send-alerts.yaml,
+                vars:
+                  {
+                    divera_type: '${divera_type_alert}',
+                    ntfy_title: '${ntfy_title_alert}',
+                    ntfy_priority: '${ntfy_priority_alert}',
+                    ntfy_tags: '${ntfy_tags_alert}',
+                    ntfy_body: '${ntfy_body_alert}'
+                  }
+              }
+              # delay is needed to get some time for the watchdog
+              # if omitted software will crash
+              - delay: 2s
+        
+      
 
 binary_sensor:
 # When the  BUT1 is pressed, on-but1-press.yaml is included

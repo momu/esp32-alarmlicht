@@ -65,10 +65,15 @@ Beispieldaten befinden sich in  [secrets-example.yaml](secrets-example.yaml). Di
 
 [alarmlicht.yaml](alarmlicht.yaml) bindet folgende Dateien ein:
 
-* [http-request-divera.yaml](http-request-divera.yaml): Auslösen eines `DIVERA` `http` requests
-* [http-request-ntfy.yaml](http-request-ntfy.yaml): Auslösen eines `ntfy` `http` requests
 * [on-but1-press.yaml](on-but1-press.yaml): `BUT1` wird betätigt
 * [on-message-receive.yaml](on-message-receive.yaml): `GPI016` oder `GPIO18` werden auf `GND` gezogen
+* [send-alerts.yaml](send-alerts.yaml): Auslösen von `http` requests durch das Einbinden von
+  * [http-request-divera.yaml](http-request-divera.yaml): Auslösen eines `DIVERA` `http` requests
+  * [http-request-ntfy.yaml](http-request-ntfy.yaml): Auslösen eines `ntfy` `http` requests
+
+Wird ein Alarm ausgelöst während keine Wi-Fi Verbindung besteht, wird der Alarm gespeichert und anschließend bei bestehender Wi-Fi Verbindung ausgelöst. Das Speichern geschieht über die globale Variable `global_alert_pending`.
+
+Da der `http` request nicht immer erfolgreich ist, wird der Statuscode ausgewertet. Ist er nicht `200` und `429` wird mehrmals versucht, den `http` request zu senden. Das Verhalten und die maximale Anzahl der Versuche wird über die globalen Variablen `global_divera_http_request_*` gesteuert.
 
 ### Setup
 

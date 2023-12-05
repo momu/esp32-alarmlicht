@@ -5,18 +5,57 @@
 - logger.log: 
     format: ${log_text}
     level: INFO
-- http_request.post:
-    url: !secret divera_alarm_api_url
-    verify_ssl: false
-    headers:
-        Content-Type: application/json
-    json:
-        type: ${divera_type}
-    on_response:
-        then:
+# increase the http retry counter
+- if:
+    condition:
+        lambda: 'return id(global_divera_http_request_failed);'
+    then:
+        - lambda: 'id(global_divera_http_request_count)++;'
         - logger.log:
-            format: 'Response status: %d, Duration: %u ms'
+            format: 'Increasing global_divera_http_request_count to %u'
             args:
-                - status_code
-                - duration_ms
+                - 'id(global_divera_http_request_count)'
             level: INFO
+# if max retry number is not reached, send an http request
+- if:
+    condition:
+        lambda: 'return (id(global_divera_http_request_count) < id(global_divera_http_request_max_retries));'
+    then:
+        - http_request.post:
+            url: !secret divera_alarm_api_url
+            verify_ssl: false
+            headers:
+                Content-Type: application/json
+            json:
+                type: ${divera_type}
+            on_response:
+                then:
+                    - logger.log:
+                        format: 'Response status: %d, Duration: %u ms'
+                        args:
+                            - status_code
+                            - duration_ms
+                        level: INFO
+                    # if http status code is neither 200 nor 429 the request failed
+                    - if:
+                        condition:
+                            lambda: "return (status_code != 200 && status_code != 429);"
+                        then:
+                            - lambda: 'id(global_divera_http_request_failed) = true;'
+                            - logger.log:
+                                format: 'Set global_divera_http_request_failed to true.'
+                                level: INFO
+                        else:
+                            - lambda: 'id(global_divera_http_request_failed) = false;'
+                            - lambda: 'id(global_divera_http_request_count) = 0;'
+                            - logger.log:
+                                format: 'Set global_divera_http_request_failed to false, global_divera_http_request_count to 0.'
+                                level: INFO
+    else:
+        - logger.log:
+            format: 'Max retry count reached (%u), stop retrying.'
+            args:
+                - 'id(global_divera_http_request_count)'
+            level: INFO
+        - lambda: 'id(global_divera_http_request_failed) = false;'
+        - lambda: 'id(global_divera_http_request_count) = 0;'

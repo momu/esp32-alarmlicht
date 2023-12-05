@@ -5,6 +5,7 @@
 # ntfy_priority: Message priority
 # ntfy_tags: Message tags
 # ntfy_body: Message body
+# no retry magic for failed http requests here
 - logger.log: 
     format: ${log_text}
     level: INFO
